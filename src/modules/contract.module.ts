@@ -1,10 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from '../controllers/app.controller';
-import { AppService } from '../providers/app.service';
+import {TypeOrmModule} from "@nestjs/typeorm";
+import {TestRepository} from "../repositories/test.repository";
+import {TestController} from "../controllers/test.controller";
 
 @Module({
-    imports: [],
-    controllers: [AppController],
-    providers: [AppService],
+    imports: [
+        TypeOrmModule.forFeature([
+            TestRepository
+        ])
+    ],
+    controllers: [TestController],
 })
 export class ContractModule {}
