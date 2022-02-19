@@ -21,32 +21,37 @@ export class ContractController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.contractService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateContractDto: UpdateContractDto) {
+  update(@Param('id') id: number, @Body() updateContractDto: UpdateContractDto) {
     return this.contractService.update(+id, updateContractDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.contractService.remove(+id);
   }
 
   @Patch('sign/:id')
-  signContract(@Param('id') id: string) {
+  signContract(@Param('id') id: number) {
     return 'file'; // Add Header ?
   }
 
   @Get('attachd-image/:id')
-  findAttachedImage(@Param('id') id: string) {
+  findAttachedImage(@Param('id') id: number) {
     return 'file';
   }
 
   @Get('tx-image/:id')
-  findTxImage(@Param('id') id: string) {
+  findTxImage(@Param('id') id: number) {
     return 'file';
+  }
+
+  @Post('tx/:id')
+  createTx(@Param('id') id: number) {
+
   }
 }
