@@ -5,5 +5,7 @@ export class CreateContractDto {
     account_pub_key: string; 
     title: string;
     ctnt: string;
+    location: string;
+    dttm: string;
     head_count: number;
 }

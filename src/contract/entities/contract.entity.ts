@@ -39,6 +39,11 @@ export class Contract {
         type: "varchar",
     })
     location: string;
+
+    @Column({
+        type: "datetime",
+    })
+    dttm: Date;
  
     @Column({
         type: "bigint",
