@@ -42,7 +42,7 @@ export class ContractService {
   }
 
   findAll() {
-    return `This action returns all contract`;
+    return 'TODO';
   }
 
   findOne(id: number) {

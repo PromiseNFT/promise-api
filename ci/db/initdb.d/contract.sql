@@ -9,6 +9,6 @@ CREATE TABLE `contract` (
   `dttm` DATETIME NOT NULL,
   `location` VARCHAR(256) NOT NULL,
   `head_count` INT NOT NULL,
-  `attached_image_path` VARCHAR(256) DEFAULT NULL,
+  -- `attached_image_path` VARCHAR(256) DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
