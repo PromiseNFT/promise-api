@@ -6,7 +6,7 @@ export class ContractApi {
   static caver = new Caver(
     new Caver.providers.HttpProvider(
       'https://node-api.klaytnapi.com/v1/klaytn',
-      null,
+      caverAPIConn,
     ),
   );
 

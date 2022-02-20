@@ -25,7 +25,7 @@ export const caverAPIConn = {
     },
     {
       name: 'x-chain-id',
-      value: 1001,
+      value: '1001',
     },
   ],
 };
