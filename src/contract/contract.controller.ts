@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Headers } from '@nestjs/common';
 import { ContractService } from './contract.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
@@ -8,37 +8,39 @@ export class ContractController {
   constructor(private readonly contractService: ContractService) {}
 
   @Post()
-  create(@Body() createContractDto: CreateContractDto) {
+  create(@Headers('User-Addr') user_addr: string, @Body() createContractDto: CreateContractDto) {
+    createContractDto.user_addr = user_addr;
     return this.contractService.create(createContractDto);
   }
 
   @Get()
-  findAll() {
-    return this.contractService.findAll();
+  findAll(@Headers('User-Addr') user_addr: string) {
+    return this.contractService.findAll(user_addr);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  findOne(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
     return this.contractService.findOne(+id);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() updateContractDto: UpdateContractDto) {
+  update(@Headers('User-Addr') user_addr: string, @Param('id') id: number, @Body() updateContractDto: UpdateContractDto) {
+    updateContractDto.user_addr = user_addr;
     return this.contractService.update(+id, updateContractDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.contractService.remove(+id);
+  remove(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
+    return this.contractService.remove(+id, user_addr);
   }
 
   @Post('sign/:id')
-  signContract(@Param('id') id: number) {
-    return 'file'; // Add Header ?
+  signContract(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
+    return this.contractService.createSign(id, user_addr);
   }
 
   @Post('tx/:id')
-  createTx(@Param('id') id: number) {
+  createTx(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
 
   }
 
