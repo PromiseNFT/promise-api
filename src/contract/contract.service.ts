@@ -25,9 +25,9 @@ export class ContractService {
   async _createKASAccount(head_count: number) {
     // Make Multiple Accounts
     const accounts: Array<Map<string, string>> = [];
-    for (let idx = 0; idx < head_count; idx++) {
+    for (let idx = 0; idx < head_count + 1; idx++) {
       const account = await ContractApi.createAccount();
-      // accounts.push( { 'account_addr': account.data.address, 'account_pub_key': account.data.publicKey } );
+      //accounts.push( { 'account_addr': account.data.address, 'account_pub_key': account.data.publicKey } );
     }
     return accounts;
   }
@@ -63,7 +63,7 @@ export class ContractService {
 
   async create(createContractDto: CreateContractDto) {
     const accounts: Array<Map<string, string>> = await this._createKASAccount(
-      createContractDto.head_count + 1,
+      createContractDto.head_count,
     );
 
     // Put Multisig
@@ -80,7 +80,7 @@ export class ContractService {
     const id: number = await this._saveToDB(createContractDto, null, null);
 
     // Return Result
-    return await this.contractEntity.findOne({ id: id });
+    return await this.findOne(id);
   }
 
   async findAll(user_addr: string) {
@@ -95,7 +95,7 @@ export class ContractService {
 
   async update(id: number, updateContractDto: UpdateContractDto) {
     const accounts: Array<Map<string, string>> = await this._createKASAccount(
-      updateContractDto.head_count + 1,
+      updateContractDto.head_count,
     );
 
     // Put Multisig
@@ -112,7 +112,7 @@ export class ContractService {
     await this._saveToDB(updateContractDto, null, null);
 
     // Return Result
-    return;
+    return await this.findOne(id);
   }
 
   async remove(id: number, user_addr: string) {
@@ -138,5 +138,6 @@ export class ContractService {
     // Api Call (Fee Delegation)
     // Api Sign
     // Save To DB
+    return this.contractTxEntity.findOne( { id: id });
   }
 }
