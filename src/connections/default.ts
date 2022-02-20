@@ -18,7 +18,15 @@ export const caverAPIConn = {
     // kasAuthorization: 'Basic S0FTS0E5OEZONThWV1U3VTdMWkVKODFXOjJsXy1MVUxXcEg0THdqQkl3WExwLWhIZVQwaXBLbksxTTk1UDg1UmI='
     // x-chain-id: 1001, 8217 is Main Netwokr, 1001 is Baobab Test Network
     headers: [
-        { name: 'Authorization', value: 'Basic S0FTS0E5OEZONThWV1U3VTdMWkVKODFXOjJsXy1MVUxXcEg0THdqQkl3WExwLWhIZVQwaXBLbksxTTk1UDg1UmI=' },
-        { name: 'x-chain-id', value: 1001 },
+        {
+            name: "Authorization",
+            value: "Basic S0FTS0E5OEZONThWV1U3VTdMWkVKODFXOjJsXy1MVUxXcEg0THdqQkl3WExwLWhIZVQwaXBLbksxTTk1UDg1UmI="
+        },
+        {
+            name: "x-chain-id", 
+            value: 1001
+        }
     ]
 }
+
+export const FeePayerAddress = '';

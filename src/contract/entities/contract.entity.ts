@@ -49,10 +49,4 @@ export class Contract {
         type: "bigint",
     })
     headcount: number;
-
-    @Column({
-        nullable: true,
-        type: "varchar",
-    })
-    attached_image_path: string;
 }
