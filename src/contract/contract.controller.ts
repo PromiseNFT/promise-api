@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Headers } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  Headers,
+} from '@nestjs/common';
 import { ContractService } from './contract.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
@@ -8,7 +17,10 @@ export class ContractController {
   constructor(private readonly contractService: ContractService) {}
 
   @Post()
-  create(@Headers('User-Addr') user_addr: string, @Body() createContractDto: CreateContractDto) {
+  create(
+    @Headers('User-Addr') user_addr: string,
+    @Body() createContractDto: CreateContractDto,
+  ) {
     createContractDto.user_addr = user_addr;
     return this.contractService.create(createContractDto);
   }
@@ -24,7 +36,11 @@ export class ContractController {
   }
 
   @Put(':id')
-  update(@Headers('User-Addr') user_addr: string, @Param('id') id: number, @Body() updateContractDto: UpdateContractDto) {
+  update(
+    @Headers('User-Addr') user_addr: string,
+    @Param('id') id: number,
+    @Body() updateContractDto: UpdateContractDto,
+  ) {
     updateContractDto.user_addr = user_addr;
     return this.contractService.update(+id, updateContractDto);
   }
@@ -35,14 +51,15 @@ export class ContractController {
   }
 
   @Post('sign/:id')
-  signContract(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
+  signContract(
+    @Headers('User-Addr') user_addr: string,
+    @Param('id') id: number,
+  ) {
     return this.contractService.createSign(id, user_addr);
   }
 
   @Post('tx/:id')
-  createTx(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
-
-  }
+  createTx(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {}
 
   // LATER
   // @Get('attachd-image/:id')

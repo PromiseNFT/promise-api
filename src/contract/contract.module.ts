@@ -7,12 +7,8 @@ import { ContractSign } from './entities/contract.sign.entity';
 import { ContractTx } from './entities/contract.tx.entitiy';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature(
-        [Contract, ContractSign, ContractTx]
-    )
-  ],
+  imports: [TypeOrmModule.forFeature([Contract, ContractSign, ContractTx])],
   controllers: [ContractController],
-  providers: [ContractService]
+  providers: [ContractService],
 })
 export class ContractModule {}
