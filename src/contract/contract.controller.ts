@@ -23,17 +23,17 @@ export class ContractController {
   ) {
     createContractDto.user_addr = user_addr;
     createContractDto.crt_dttm = new Date(Date.now());
-    return await this.contractService.create(createContractDto);
+    return this.contractService.create(createContractDto);
   }
 
   @Get()
   async findAll(@Headers('User-Addr') user_addr: string) {
-    return await this.contractService.findAll(user_addr);
+    return this.contractService.findAll(user_addr);
   }
 
   @Get(':id')
   async findOne(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
-    return await this.contractService.findOne(+id);
+    return this.contractService.findOne(+id);
   }
 
   @Put(':id')
@@ -43,12 +43,12 @@ export class ContractController {
     @Body() updateContractDto: UpdateContractDto,
   ) {
     updateContractDto.user_addr = user_addr;
-    return await this.contractService.update(+id, updateContractDto);
+    return this.contractService.update(+id, updateContractDto);
   }
 
   @Delete(':id')
   async remove(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
-    return await this.contractService.remove(+id, user_addr);
+    return this.contractService.remove(+id, user_addr);
   }
 
   @Post('sign/:id')
@@ -56,12 +56,12 @@ export class ContractController {
     @Headers('User-Addr') user_addr: string,
     @Param('id') id: number,
   ) {
-    return await this.contractService.createSign(+id, user_addr);
+    return this.contractService.createSign(+id, user_addr);
   }
 
   @Post('tx/:id')
   async createTx(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
-    return await this.contractService.createTx(+id, user_addr);
+    return this.contractService.createTx(+id, user_addr);
   }
 
   // LATER
