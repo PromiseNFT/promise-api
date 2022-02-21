@@ -1,5 +1,5 @@
 CREATE TABLE `contract` (
-  'id' BIGINT NOT NULL AUTO_INCREMENT
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `user_addr` VARCHAR(256) NOT NULL,
   `crt_dttm` DATETIME NOT NULL,
   `account_addr` VARCHAR(256) NOT NULL,

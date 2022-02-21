@@ -17,51 +17,51 @@ export class ContractController {
   constructor(private readonly contractService: ContractService) {}
 
   @Post()
-  create(
+  async create(
     @Headers('User-Addr') user_addr: string,
     @Body() createContractDto: CreateContractDto,
   ) {
     createContractDto.user_addr = user_addr;
     createContractDto.crt_dttm = new Date(Date.now());
-    return this.contractService.create(createContractDto);
+    return await this.contractService.create(createContractDto);
   }
 
   @Get()
-  findAll(@Headers('User-Addr') user_addr: string) {
-    return this.contractService.findAll(user_addr);
+  async findAll(@Headers('User-Addr') user_addr: string) {
+    return await this.contractService.findAll(user_addr);
   }
 
   @Get(':id')
-  findOne(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
-    return this.contractService.findOne(+id);
+  async findOne(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
+    return await this.contractService.findOne(+id);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Headers('User-Addr') user_addr: string,
     @Param('id') id: number,
     @Body() updateContractDto: UpdateContractDto,
   ) {
     updateContractDto.user_addr = user_addr;
-    return this.contractService.update(+id, updateContractDto);
+    return await this.contractService.update(+id, updateContractDto);
   }
 
   @Delete(':id')
-  remove(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
-    return this.contractService.remove(+id, user_addr);
+  async remove(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
+    return await this.contractService.remove(+id, user_addr);
   }
 
   @Post('sign/:id')
-  signContract(
+  async signContract(
     @Headers('User-Addr') user_addr: string,
     @Param('id') id: number,
   ) {
-    return this.contractService.createSign(+id, user_addr);
+    return await this.contractService.createSign(+id, user_addr);
   }
 
   @Post('tx/:id')
-  createTx(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
-    return this.contractService.createTx(+id, user_addr);
+  async createTx(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
+    return await this.contractService.createTx(+id, user_addr);
   }
 
   // LATER
