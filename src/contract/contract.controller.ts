@@ -22,7 +22,7 @@ export class ContractController {
     @Body() createContractDto: CreateContractDto,
   ) {
     createContractDto.user_addr = user_addr;
-    // createContractDto.crt_dttm = Date.now();
+    createContractDto.crt_dttm = new Date(Date.now());
     return this.contractService.create(createContractDto);
   }
 
@@ -56,11 +56,13 @@ export class ContractController {
     @Headers('User-Addr') user_addr: string,
     @Param('id') id: number,
   ) {
-    return this.contractService.createSign(id, user_addr);
+    return this.contractService.createSign(+id, user_addr);
   }
 
   @Post('tx/:id')
-  createTx(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {}
+  createTx(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
+    return this.contractService.createTx(+id, user_addr);
+  }
 
   // LATER
   // @Get('attachd-image/:id')

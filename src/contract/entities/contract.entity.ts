@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from 'typeorm';
+import { ContractSign } from './contract.sign.entity';
+import { ContractTx } from './contract.tx.entity';
 
 @Entity()
 export class Contract {
@@ -48,5 +50,11 @@ export class Contract {
   @Column({
     type: 'bigint',
   })
-  headcount: number;
+  head_count: number;
+
+  @OneToMany(() => ContractSign, sign => sign.id)
+  signs: ContractSign[];
+
+  @OneToOne(() => ContractTx, tx => tx.id, { nullable: true })
+  tx: ContractTx;
 }
