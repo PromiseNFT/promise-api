@@ -148,7 +148,7 @@ export class ContractService {
 
   async createTx(id: number, user_addr: string) {
     const db_data = await this.findOne(id);
-    const toekn_id = '0x' + uuidv4().replace('-', '');
+    const toekn_id = '0x' + String(uuidv4()).replace('-', '');
     const meta_data: string = String(db_data);
 
     // Api Call (Fee Delegation)
