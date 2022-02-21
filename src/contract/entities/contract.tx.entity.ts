@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Contract } from './contract.entity';
 
 @Entity()
 export class ContractTx {
@@ -29,5 +30,14 @@ export class ContractTx {
   @Column({
     type: 'varchar',
   })
+  token_id: string;
+
+  @Column({
+    type: 'varchar',
+  })
   meta_data: string;
+
+  @OneToOne(() => Contract, contract => contract.id)
+  @JoinColumn()
+  tx: ContractTx;
 }

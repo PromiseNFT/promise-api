@@ -12,6 +12,7 @@ export const defaultDBConn = {
   synchronize: false,
 };
 
+// TODO : Config Value TO .env File 
 export const caverAPIConn = {
   // kasAccessKeyId: 'KASKA98FN58VWU7U7LZEJ81W',
   // kasSecretAccessKey: '2l_-LULWpH4LwjBIwXLp-hHeT0ipKnK1M95P85Rb',
@@ -30,4 +31,5 @@ export const caverAPIConn = {
   ],
 };
 
-export const FeePayerAddress = '';
+export const feePayerAddress = '0x1F22B0f2dc00bB3aefeb835594B0FAa51DF4Bc9A';
+export const nftContractAddress = '0x6e22a7676e85f2250ce2c7e8f78111a72a61d95f';

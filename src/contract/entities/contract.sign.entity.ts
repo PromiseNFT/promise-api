@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { Contract } from './contract.entity';
 
 @Entity()
 export class ContractSign {
@@ -26,4 +27,7 @@ export class ContractSign {
     nullable: true,
   })
   user_addr: string;
+
+  @ManyToOne(() => Contract, contract => contract.id)
+  contract: Contract;
 }
