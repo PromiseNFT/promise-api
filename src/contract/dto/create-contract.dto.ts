@@ -6,6 +6,7 @@ export class CreateContractDto {
   title: string;
   ctnt: string;
   location: string;
-  dttm: string;
+  date: Date;
+  time: string;
   head_count: number;
 }
