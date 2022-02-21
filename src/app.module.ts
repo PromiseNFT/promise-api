@@ -7,6 +7,6 @@ import { ContractModule } from './contract/contract.module';
   imports: [
     TypeOrmModule.forRoot(defaultDBConn as TypeOrmModuleOptions),
     ContractModule,
-  ],
+  ]
 })
 export class AppModule {}

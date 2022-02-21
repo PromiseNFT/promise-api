@@ -1,6 +1,6 @@
 CREATE TABLE `tx` (
-  'id' BIGINT NOT NULL,
-  `tx_dttm` VARCHAR(256) NOT NULL, 
+  `id` BIGINT NOT NULL,
+  `tx_dttm` DATETIME NOT NULL, 
   `tx_hash` VARCHAR(256) NOT NULL,
   `tx_id` VARCHAR(256) NOT NULL,
   `image_path` VARCHAR(256) DEFAULT NULL,

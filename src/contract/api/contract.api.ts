@@ -74,6 +74,7 @@ export class ContractApi {
     }, [user_addr, token_id, meta_data]);
 
     const result = await axios({
+      method: 'post',
       url: `https://wallet-api.klaytnapi.com/v2/tx/fd-user/contract/execute`,
       headers: caverAPIConn,
       data: {
