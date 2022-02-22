@@ -51,7 +51,7 @@ export class ContractController {
     return this.contractService.remove(+id, user_addr);
   }
 
-  @Post('sign/:id')
+  @Post(':id/sign')
   async signContract(
     @Headers('User-Addr') user_addr: string,
     @Param('id') id: number,
@@ -59,7 +59,7 @@ export class ContractController {
     return this.contractService.createSign(+id, user_addr);
   }
 
-  @Post('tx/:id')
+  @Post(':id/tx')
   async createTx(@Headers('User-Addr') user_addr: string, @Param('id') id: number) {
     return this.contractService.createTx(+id, user_addr);
   }
