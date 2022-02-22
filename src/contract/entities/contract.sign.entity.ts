@@ -5,10 +5,7 @@ import { Contract } from './contract.entity';
 export class ContractSign extends BaseEntity {
   @PrimaryColumn()
   id: number;
-
-  @PrimaryColumn()
-  account_addr: string;
-
+  
   @Column({
     type: 'varchar',
   })
@@ -26,7 +23,7 @@ export class ContractSign extends BaseEntity {
   })
   user_addr: string;
 
-  @ManyToOne((type) => Contract, (contract) => contract.signs)
+  @ManyToOne((type) => Contract, (contract) => contract.signs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: "id", referencedColumnName: "id" })
   contract: Contract;
 }

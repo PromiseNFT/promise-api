@@ -27,11 +27,15 @@ export class ContractService {
     // Make Multiple Accounts
     let account_key_arr: Array<string> = [];
     let account_addresse_arr: Array<string> = [];
-    for (let idx = 0; idx < head_count + 1; idx++) {
-      const account = await ContractApi.createAccount();
-      account_addresse_arr.push(account.data.address);
-      account_key_arr.push(account.data.publicKey);
+    const account = await ContractApi.createAccount();
+    account_addresse_arr.push(account.data.address);
+    account_key_arr.push(account.data.publicKey);
+
+    const keyring = await ContractApi.creteKeyings(head_count);
+    for (let idx = 0; idx < head_count; idx++) {
+      account_key_arr.push(keyring[idx]);
     }
+
     return [account_key_arr, account_addresse_arr];
   }
 
@@ -63,7 +67,6 @@ export class ContractService {
     for (let idx = 1; idx < dto.head_count + 1; idx++) {
       await this.contractSignEntity.insert({
         id: id,
-        account_addr: account_addresse_arr[idx],
         account_pub_key: account_key_arr[idx]
       });
     }
@@ -72,6 +75,7 @@ export class ContractService {
   }
 
   async create(createContractDto: CreateContractDto) {
+    console.log('[Contract Service] ===> Before Create Account');
     const [account_key_arr, account_addresse_arr] = await this._createKASAccount(
       createContractDto.head_count,
     );
@@ -145,13 +149,13 @@ export class ContractService {
 
   async createSign(id: number, user_addr: string) {
     // Get Account Address
-    const account_addr: string = (
-      await this.contractSignEntity.findOne({ id: id, user_addr: null })
-    ).account_addr;
+    const account_pub_key: string = 
+      (await this.contractSignEntity.findOne({ id: id, user_addr: null })).account_pub_key;
+    console.log(account_pub_key);
     // Sign DB
     this.contractSignEntity.update(
-      { id: id, account_addr: account_addr },
-      { sign_dttm: Date.now(), user_addr: user_addr },
+      { id: id, account_pub_key: account_pub_key },
+      { sign_dttm: new Date().toISOString(), user_addr: user_addr },
     );
     // Return Result
     return await this.contractSignEntity.find({ id: id });
@@ -159,27 +163,35 @@ export class ContractService {
 
   async createTx(id: number, user_addr: string) {
     const db_data = await this.findOne(id);
-    const toekn_id = '0x' + String(uuidv4()).replace('-', '');
-    const meta_data: string = String(db_data);
+    const token_id = '0x' + String(uuidv4()).replace(/-/g, '');
+    const meta_data: string = 'Test Data';//JSON.stringify(db_data);
 
     // Api Call (Fee Delegation)
-    const tx_rslt = await ContractApi.postTx(toekn_id, db_data.user_addr, meta_data);
+    console.log(meta_data);
+    console.log(token_id);
+    const tx_rslt = await ContractApi.postTx(token_id, db_data.account_addr, meta_data);
     if (tx_rslt === null)
       throw HttpException;
+    console.log('[Contract Service] ===> After Post Tx');
+    console.log(tx_rslt.transactionId);
     
-    let transactionHash = '';
-    for (let idx = 0; idx < db_data.head_count; idx++) {
-      // Api Sign
-      const signRslt = await ContractApi.signTxId(db_data.user_addr, tx_rslt.transactionId);
-      if (signRslt === null)
-        throw HttpException;      
-      if (idx + 1 == db_data.head_count)
-        transactionHash = signRslt.transactionHash;
-    }
+    // let transactionHash = '';
+    // for (let idx = 0; idx < db_data.head_count; idx++) {
+    //   // Api Sign
+    //   console.log(db_data.signs[idx].account_addr);
+    //   // TODO
+    //   // Sign With Public Key ?
+    //   //const signRslt = await ContractApi.signTxId(db_data.signs[idx].account_addr, tx_rslt.transactionId);
+    //   if (signRslt === null)
+    //     throw HttpException;      
+    //   if (idx + 1 == db_data.head_count)
+    //     transactionHash = signRslt.transactionHash;
+    // }
+    // console.log('[Contract Service] ===> After Sign');
+    // console.log(meta_data.length);
+    // // Save To DB
+    // await this.contractTxEntity.insert( {id: id, tx_dttm: new Date().toISOString(), tx_hash: transactionHash, tx_id: tx_rslt.transactionId, token_id: token_id, meta_data: meta_data} );
 
-    // Save To DB
-    await this.contractTxEntity.insert( {id: id, tx_dttm: Date.now(), tx_hash: transactionHash, tx_id: tx_rslt.transactionId, token_id: toekn_id, meta_data: meta_data} );
-
-    return await this.contractTxEntity.findOne( { id: id });
+    // return await this.contractTxEntity.findOne( { id: id });
   }
 }

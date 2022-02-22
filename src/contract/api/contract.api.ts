@@ -10,6 +10,12 @@ export class ContractApi {
     ),
   );
 
+  static async creteKeyings(size: number) {
+    const keyring = await this.caver.wallet.keyring.generateMultipleKeys(size);
+    // console.log(JSON.stringify(keyring));
+    return keyring;
+  }
+
   static async createAccount() {
     console.log('[ContractApi - createAccount]')
     const result = await axios.post(
@@ -69,10 +75,11 @@ export class ContractApi {
             type: 'uint256',
             name: 'tokenId'
         },{
-            type: 'tokenURI',
+            type: 'string',
             name: 'tokenURI'
         }]
     }, [user_addr, token_id, meta_data]);
+    console.log(input);
 
     const result = await axios({
       method: 'post',
@@ -89,6 +96,8 @@ export class ContractApi {
         feePayer: feePayerAddress
       }
     });
+    console.log('[Caver API] - post Tx');
+    console.log(result.data);
 
     if (result.status < 300 && result.status >= 200)
       return result.data;
