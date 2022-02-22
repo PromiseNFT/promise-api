@@ -69,7 +69,7 @@ export class ContractService {
     const [account_key_arr, account_addresse_arr] = await this._createKASAccount(
       createContractDto.head_count,
     );
-
+    console.log('[Contract Service] ===> After Create Account');
     // Put Multisig
     if (
       !await ContractApi.putMultisigKlaytnAccount(

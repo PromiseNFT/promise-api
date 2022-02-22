@@ -58,9 +58,9 @@ export class Contract {
   })
   head_count: number;
 
-  @OneToMany(() => ContractSign, sign => sign.id)
+  @OneToMany(() => ContractSign, sign => sign.contract)
   signs: ContractSign[];
 
-  @OneToOne(() => ContractTx, tx => tx.id, { nullable: true })
+  @OneToOne(() => ContractTx, tx => tx.contract, { nullable: true })
   tx: ContractTx;
 }

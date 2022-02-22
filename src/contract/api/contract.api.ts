@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Caver from 'caver-js';
-import { caverAPIConn, feePayerAddress, nftContractAddress } from 'src/connections/default';
+import { caverAPIConn, axiosAPiHeaders, feePayerAddress, nftContractAddress } from 'src/connections/default';
 
 export class ContractApi {
   static caver = new Caver(
@@ -11,10 +11,11 @@ export class ContractApi {
   );
 
   static async createAccount() {
+    console.log('[ContractApi - createAccount]')
     const result = await axios.post(
       `https://wallet-api.klaytnapi.com/v2/account`,
       null,
-      caverAPIConn,
+      { headers: axiosAPiHeaders },
     );
     return result;
   }
@@ -37,7 +38,7 @@ export class ContractApi {
     const result = await axios({
       method: 'put', 
       url: `https://wallet-api.klaytnapi.com/v2/tx/fd-user/account`, 
-      headers: caverAPIConn,
+      headers: axiosAPiHeaders,
       data: {
         from: address,
         feePayer: feePayerAddress,
@@ -76,7 +77,7 @@ export class ContractApi {
     const result = await axios({
       method: 'post',
       url: `https://wallet-api.klaytnapi.com/v2/tx/fd-user/contract/execute`,
-      headers: caverAPIConn,
+      headers: axiosAPiHeaders,
       data: {
         from: user_addr,
         value: '0x0',
@@ -98,6 +99,8 @@ export class ContractApi {
   static async signTxId(address: string, txId: string) {
     const result = await axios.post(
       `https://wallet-api.klaytnapi.com/v2/multisig/account/${address}/tx/${txId}/sign`,
+      null,
+      { headers: axiosAPiHeaders },
     );
     if (result.status < 300 && result.status >= 200)
       return result.data;

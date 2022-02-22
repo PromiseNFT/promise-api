@@ -37,7 +37,7 @@ export class ContractTx {
   })
   meta_data: string;
 
-  @OneToOne(() => Contract, contract => contract.id)
+  @OneToOne(() => Contract, contract => contract.tx)
   @JoinColumn()
-  tx: ContractTx;
+  contract: ContractTx;
 }
