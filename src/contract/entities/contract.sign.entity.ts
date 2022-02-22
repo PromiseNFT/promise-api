@@ -1,14 +1,12 @@
-import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { BaseEntity, Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Contract } from './contract.entity';
 
 @Entity()
-export class ContractSign {
+export class ContractSign extends BaseEntity {
   @PrimaryColumn()
   id: number;
 
-  @Column({
-    type: 'varchar',
-  })
+  @PrimaryColumn()
   account_addr: string;
 
   @Column({
@@ -28,6 +26,7 @@ export class ContractSign {
   })
   user_addr: string;
 
-  @ManyToOne(() => Contract, contract => contract.signs)
+  @ManyToOne((type) => Contract, (contract) => contract.signs)
+  @JoinColumn({ name: "id", referencedColumnName: "id" })
   contract: Contract;
 }

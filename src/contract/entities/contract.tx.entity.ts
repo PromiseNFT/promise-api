@@ -1,8 +1,8 @@
-import { Column, Entity, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
 import { Contract } from './contract.entity';
 
 @Entity()
-export class ContractTx {
+export class ContractTx extends BaseEntity {
   @PrimaryColumn()
   id: number;
 
@@ -37,7 +37,7 @@ export class ContractTx {
   })
   meta_data: string;
 
-  @OneToOne(() => Contract, contract => contract.tx)
-  @JoinColumn()
-  contract: ContractTx;
+  @OneToOne((tpye) => Contract, (contract) => contract.tx)
+  @JoinColumn({ name: "id", referencedColumnName: "id" })
+  contract: Contract;
 }

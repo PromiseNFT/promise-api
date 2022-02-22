@@ -9,7 +9,7 @@ export const defaultDBConn = {
     `${__dirname}/../**/entities/*.js`,
     `${__dirname}/../**/entities/*.ts`,
   ],
-  synchronize: true,
+  synchronize: false,
 };
 
 // TODO : Config Value TO .env File 

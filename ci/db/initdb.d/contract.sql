@@ -1,7 +1,7 @@
 CREATE TABLE `contract` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `user_addr` VARCHAR(256) NOT NULL,
-  `crt_dttm` DATETIME NOT NULL,
+  `crt_dttm` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `account_addr` VARCHAR(256) NOT NULL,
   `account_pub_key` VARCHAR(256) NOT NULL,
   `title` VARCHAR(1024) NOT NULL,
