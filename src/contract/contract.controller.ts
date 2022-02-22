@@ -22,7 +22,7 @@ export class ContractController {
     @Body() createContractDto: CreateContractDto,
   ) {
     createContractDto.user_addr = user_addr;
-    createContractDto.crt_dttm = new Date(Date.now());
+    // createContractDto.crt_dttm = new Date(Date.now());
     return this.contractService.create(createContractDto);
   }
 

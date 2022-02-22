@@ -1,9 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from 'typeorm';
+import { BaseEntity, Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from 'typeorm';
 import { ContractSign } from './contract.sign.entity';
 import { ContractTx } from './contract.tx.entity';
 
 @Entity()
-export class Contract {
+export class Contract extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,6 +14,7 @@ export class Contract {
 
   @Column({
     type: 'datetime',
+    default: () => "CURRENT_TIMESTAMP"
   })
   crt_dttm: Date;
 
@@ -58,9 +59,9 @@ export class Contract {
   })
   head_count: number;
 
-  @OneToMany(() => ContractSign, sign => sign.contract)
+  @OneToMany((type) => ContractSign, (sign) => sign.contract)
   signs: ContractSign[];
 
-  @OneToOne(() => ContractTx, tx => tx.contract, { nullable: true })
+  @OneToOne((type) => ContractTx, (tx) => tx.contract, { nullable: true })
   tx: ContractTx;
 }

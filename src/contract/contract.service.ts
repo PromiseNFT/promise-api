@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Transaction } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Contract } from './entities/contract.entity';
 import { ContractApi } from './api/contract.api';
 import { ContractSign } from './entities/contract.sign.entity';
@@ -35,30 +35,36 @@ export class ContractService {
     return [account_key_arr, account_addresse_arr];
   }
 
-  @Transaction()
+  // TODO Transaction Need
   async _saveToDB(
     dto: UpdateContractDto,
     id: number,
     account_key_arr: Array<string>,
     account_addresse_arr: Array<string>
   ) {
-    if (id !== null) await this.contractSignEntity.delete({ id: id });
+    console.log('[Contract Service] ===> _saveToDB()');
+    console.log(dto);
+    console.log(id);
+    console.log(account_key_arr);
+    console.log(account_addresse_arr);
+
+    if (id !== null || id > 0) await this.contractSignEntity.delete({ id: id });
 
     dto.account_addr = account_addresse_arr[0];
     dto.account_pub_key = account_key_arr[0];
 
-    if (id === null) {
+    if (id === null || id < 0) {
       // dto.crt_dttm = Date.now();
-      id = (await this.contractEntity.insert(dto)).generatedMaps[0].id;
+      id = (await this.contractEntity.insert( { user_addr: dto.user_addr, account_addr: dto.account_addr, account_pub_key: dto.account_pub_key, title: dto.title, ctnt: dto.ctnt, date: dto.date, time: dto.time, location: dto.location, head_count: dto.head_count } )).generatedMaps[0].id;
     } else {
-      await this.contractEntity.update({ id: id }, dto);
+      await this.contractEntity.update({ id: id }, { account_addr: dto.account_addr, account_pub_key: dto.account_pub_key, title: dto.title, ctnt: dto.ctnt, date: dto.date, time: dto.time, location: dto.location, head_count: dto.head_count });
     }
 
     for (let idx = 1; idx < dto.head_count + 1; idx++) {
       await this.contractSignEntity.insert({
         id: id,
         account_addr: account_addresse_arr[idx],
-        account_pub_key: account_key_arr[idx],
+        account_pub_key: account_key_arr[idx]
       });
     }
 
@@ -70,6 +76,8 @@ export class ContractService {
       createContractDto.head_count,
     );
     console.log('[Contract Service] ===> After Create Account');
+    console.log(account_key_arr);
+    console.log(account_addresse_arr);
     // Put Multisig
     if (
       !await ContractApi.putMultisigKlaytnAccount(
@@ -81,7 +89,10 @@ export class ContractService {
       throw HttpException;
 
     // Save To DB ( + Sign DB )
-    const id: number = await this._saveToDB(createContractDto, null, account_key_arr, account_addresse_arr);
+    console.log('[Contract Service] ===> Before _saveToDB()');
+    console.log(account_key_arr);
+    console.log(account_addresse_arr);
+    const id: number = await this._saveToDB(createContractDto, -1, account_key_arr, account_addresse_arr);
 
     // Return Result
     return await this.findOne(id);
@@ -92,16 +103,16 @@ export class ContractService {
     return await this.contractEntity.find({ 
       relations: ['signs'],
       where: [
-        { user_addr: user_addr },
-        { signs: {
-          user_addr: user_addr,
-        } }
+        { user_addr: user_addr }, 
       ]
     });
+    // return await this.contractEntity.find( {user_addr: user_addr} );
   }
 
   async findOne(id: number) {
     // TODO Retrun With Left Join Data
+    // return await this.contractEntity.findOne(id, { relations: ['signs', 'tx'] });
+    //return await this.contractEntity.findOne( {id: id} );
     return await this.contractEntity.findOne(id, { relations: ['signs', 'tx'] });
   }
 

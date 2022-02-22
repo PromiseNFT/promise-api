@@ -1,4 +1,4 @@
-CREATE TABLE `tx` (
+CREATE TABLE `contract_tx` (
   `id` BIGINT NOT NULL,
   `tx_dttm` DATETIME NOT NULL, 
   `tx_hash` VARCHAR(256) NOT NULL,

@@ -1,4 +1,4 @@
-CREATE TABLE `sign` (
+CREATE TABLE `contract_sign` (
   `id` BIGINT NOT NULL,
   `account_addr` VARCHAR(256) NOT NULL,
   `account_pub_key` VARCHAR(256) NOT NULL,
