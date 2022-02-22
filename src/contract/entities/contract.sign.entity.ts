@@ -28,6 +28,6 @@ export class ContractSign {
   })
   user_addr: string;
 
-  @ManyToOne(() => Contract, contract => contract.id)
+  @ManyToOne(() => Contract, contract => contract.signs)
   contract: Contract;
 }

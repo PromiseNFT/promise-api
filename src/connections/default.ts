@@ -9,7 +9,7 @@ export const defaultDBConn = {
     `${__dirname}/../**/entities/*.js`,
     `${__dirname}/../**/entities/*.ts`,
   ],
-  synchronize: false,
+  synchronize: true,
 };
 
 // TODO : Config Value TO .env File 
@@ -29,6 +29,11 @@ export const caverAPIConn = {
       value: '1001',
     },
   ],
+};
+
+export const axiosAPiHeaders = {
+  'Authorization': 'Basic S0FTS0E5OEZONThWV1U3VTdMWkVKODFXOjJsXy1MVUxXcEg0THdqQkl3WExwLWhIZVQwaXBLbksxTTk1UDg1UmI=',
+  'x-chain-id': '1001'
 };
 
 export const feePayerAddress = '0x1F22B0f2dc00bB3aefeb835594B0FAa51DF4Bc9A';
