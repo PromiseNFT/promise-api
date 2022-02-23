@@ -18,6 +18,7 @@ export class ContractApi {
     await this.caver.wallet.add(senderKeyring);
     // Add Fee Payer Account To Wallet
     const feePayerKeyring = await this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey);
+    await this.caver.wallet.remove(feePayerAddress);
     await this.caver.wallet.add(feePayerKeyring);
     
     console.log(JSON.stringify(senderKeyring));
@@ -71,7 +72,16 @@ export class ContractApi {
     return [account_pirvate_arr, account_addresse_arr];
   }
 
-  static async postTx(token_id: string, user_addr: string, meta_data: string) {
+  static async postTx(token_id: string, meta_data: string, address: string, privateKey: string, user_addr: string) {
+    // Add To Wallet
+    const senderKeyring = await this.caver.wallet.keyring.create(address, privateKey);
+    const feePayerKeyring = await this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey);
+    await this.caver.wallet.remove(address);    
+    await this.caver.wallet.remove(feePayerAddress);   
+    await this.caver.wallet.add(senderKeyring);
+    await this.caver.wallet.add(feePayerKeyring);
+
+    // (1) Create Transaction (User Transaction) 
     const input = this.caver.klay.abi.encodeFunctionCall({
         name: 'mintWithTokenURI',
         type: 'function',
@@ -87,40 +97,25 @@ export class ContractApi {
         }]
     }, [user_addr, token_id, meta_data]);
     console.log(input);
-
-    const result = await axios({
-      method: 'post',
-      url: `https://wallet-api.klaytnapi.com/v2/tx/fd-user/contract/execute`,
-      headers: axiosAPiHeaders,
-      data: {
-        from: user_addr,
-        value: '0x0',
+    const senderTransaction = this.caver.transaction.feeDelegatedSmartContractExecution.create({
+        from: address,
         to: nftContractAddress,
         input: input,
-        none: 0,
-        gas: 0,
-        submit: true,
-        feePayer: feePayerAddress
-      }
+        gas: 90000,
     });
-    console.log('[Caver API] - post Tx');
-    console.log(result.data);
+    // (2) Create rawTransaction 
+    await this.caver.wallet.signAsFeePayer(feePayerAddress, senderTransaction);
+    console.log(`[postTx] ===> signAsFeePayer : feeDelegatedSmartContractExecution`);
 
-    if (result.status < 300 && result.status >= 200)
-      return result.data;
-    else
-      return null;
-  }
+    await this.caver.wallet.sign(address, senderTransaction);
+    console.log(`[postTx] ===> sign : feeDelegatedSmartContractExecution`);
 
-  static async signTxId(address: string, txId: string) {
-    const result = await axios.post(
-      `https://wallet-api.klaytnapi.com/v2/multisig/account/${address}/tx/${txId}/sign`,
-      null,
-      { headers: axiosAPiHeaders },
-    );
-    if (result.status < 300 && result.status >= 200)
-      return result.data;
-    else
-      return null;
+    const receipt = await this.caver.rpc.klay.sendRawTransaction(senderTransaction);
+    console.log(`\receipt ==========> `)
+    console.log(receipt)
+
+    // Remove From Wallet
+    await this.caver.wallet.remove(address);    
+    await this.caver.wallet.remove(feePayerAddress);   
   }
 }

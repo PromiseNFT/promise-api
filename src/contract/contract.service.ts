@@ -123,7 +123,7 @@ export class ContractService {
       (await this.contractSignEntity.findOne({ id: id, user_addr: null })).account_priv_key;
     console.log(account_priv_key);
     // Sign DB
-    this.contractSignEntity.update(
+    await this.contractSignEntity.update(
       { id: id, account_priv_key: account_priv_key },
       { sign_dttm: new Date().toISOString(), user_addr: user_addr },
     );
@@ -134,11 +134,30 @@ export class ContractService {
   async createTx(id: number, user_addr: string) {
     const db_data = await this.findOne(id);
     const token_id = '0x' + String(uuidv4()).replace(/-/g, '');
-    const meta_data: string = 'Test Data';//JSON.stringify(db_data);
+    let meta_data_map = {
+      id: db_data.id,
+      crt_dttm: db_data.crt_dttm,
+      user_addr: db_data.user_addr,
+      title: db_data.title,
+      ctnt: db_data.ctnt,
+      date: db_data.date,
+      time: db_data.time,
+      location: db_data.location,
+      head_count: db_data.head_count,
+      signs: []
+    };//JSON.stringify(db_data);
+    for (let idx = 0; idx < db_data.head_count; idx++) {
+      meta_data_map.signs.push( { 
+        sign_dttm: db_data.signs[idx].sign_dttm,
+        user_addr: db_data.signs[idx].user_addr 
+      } );
+    }
+    const meta_data = JSON.stringify(meta_data_map);
 
     // Api Call (Fee Delegation)
     console.log(meta_data);
     console.log(token_id);
+    await ContractApi.postTx(token_id, meta_data, db_data.account_addr, db_data.account_priv_key, db_data.user_addr);
     // const tx_rslt = await ContractApi.postTx(token_id, db_data.account_addr, meta_data);
     // if (tx_rslt === null)
     //   throw HttpException;
