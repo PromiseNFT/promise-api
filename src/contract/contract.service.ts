@@ -23,18 +23,11 @@ export class ContractService {
     this.contractTxEntity = contractTxEntity;
   }
 
-  async _createKASAccount(head_count: number) {
+  async _createMultisigAccount(head_count: number) {
     // Make Multiple Accounts
     let account_key_arr: Array<string> = [];
     let account_addresse_arr: Array<string> = [];
-    const account = await ContractApi.createAccount();
-    account_addresse_arr.push(account.data.address);
-    account_key_arr.push(account.data.publicKey);
-
-    const keyring = await ContractApi.creteKeyings(head_count);
-    for (let idx = 0; idx < head_count; idx++) {
-      account_key_arr.push(keyring[idx]);
-    }
+    const account = await ContractApi.creteKeyings(head_count);
 
     return [account_key_arr, account_addresse_arr];
   }
@@ -43,31 +36,31 @@ export class ContractService {
   async _saveToDB(
     dto: UpdateContractDto,
     id: number,
-    account_key_arr: Array<string>,
+    account_pirvate_arr: Array<string>,
     account_addresse_arr: Array<string>
   ) {
     console.log('[Contract Service] ===> _saveToDB()');
     console.log(dto);
     console.log(id);
-    console.log(account_key_arr);
+    console.log(account_pirvate_arr);
     console.log(account_addresse_arr);
 
-    if (id !== null || id > 0) await this.contractSignEntity.delete({ id: id });
-
-    dto.account_addr = account_addresse_arr[0];
-    dto.account_pub_key = account_key_arr[0];
+    if (id !== null || id > 0) 
+      await this.contractSignEntity.delete({ id: id });
 
     if (id === null || id < 0) {
       // dto.crt_dttm = Date.now();
-      id = (await this.contractEntity.insert( { user_addr: dto.user_addr, account_addr: dto.account_addr, account_pub_key: dto.account_pub_key, title: dto.title, ctnt: dto.ctnt, date: dto.date, time: dto.time, location: dto.location, head_count: dto.head_count } )).generatedMaps[0].id;
+      id = 
+        (await this.contractEntity.insert( { user_addr: dto.user_addr, account_addr: account_addresse_arr[0], account_priv_key: account_pirvate_arr[0], title: dto.title, ctnt: dto.ctnt, date: dto.date, time: dto.time, location: dto.location, head_count: dto.head_count } )).generatedMaps[0].id;
     } else {
-      await this.contractEntity.update({ id: id }, { account_addr: dto.account_addr, account_pub_key: dto.account_pub_key, title: dto.title, ctnt: dto.ctnt, date: dto.date, time: dto.time, location: dto.location, head_count: dto.head_count });
+      await this.contractEntity.update({ id: id }, { account_addr: account_addresse_arr[0], account_priv_key: account_pirvate_arr[0], title: dto.title, ctnt: dto.ctnt, date: dto.date, time: dto.time, location: dto.location, head_count: dto.head_count });
     }
 
     for (let idx = 1; idx < dto.head_count + 1; idx++) {
       await this.contractSignEntity.insert({
         id: id,
-        account_pub_key: account_key_arr[idx]
+        account_addr: account_addresse_arr[idx],
+        account_priv_key: account_pirvate_arr[idx]
       });
     }
 
@@ -76,27 +69,18 @@ export class ContractService {
 
   async create(createContractDto: CreateContractDto) {
     console.log('[Contract Service] ===> Before Create Account');
-    const [account_key_arr, account_addresse_arr] = await this._createKASAccount(
+    const [account_pirvate_arr, account_addresse_arr] = await this._createMultisigAccount(
       createContractDto.head_count,
     );
     console.log('[Contract Service] ===> After Create Account');
-    console.log(account_key_arr);
+    console.log(account_pirvate_arr);
     console.log(account_addresse_arr);
-    // Put Multisig
-    if (
-      !await ContractApi.putMultisigKlaytnAccount(
-        account_addresse_arr[0],
-        createContractDto.head_count,
-        account_key_arr
-      )
-    )
-      throw HttpException;
 
     // Save To DB ( + Sign DB )
     console.log('[Contract Service] ===> Before _saveToDB()');
-    console.log(account_key_arr);
+    console.log(account_pirvate_arr);
     console.log(account_addresse_arr);
-    const id: number = await this._saveToDB(createContractDto, -1, account_key_arr, account_addresse_arr);
+    const id: number = await this._saveToDB(createContractDto, -1, account_pirvate_arr, account_addresse_arr);
 
     // Return Result
     return await this.findOne(id);
@@ -121,22 +105,12 @@ export class ContractService {
   }
 
   async update(id: number, updateContractDto: UpdateContractDto) {
-    const [account_key_arr, account_addresse_arr] = await this._createKASAccount(
+    const [account_pirvate_arr, account_addresse_arr] = await this._createMultisigAccount(
       updateContractDto.head_count,
     );
 
-    // Put Multisig
-    if (
-      !await ContractApi.putMultisigKlaytnAccount(
-        account_addresse_arr[0],
-        updateContractDto.head_count,
-        account_key_arr
-      )
-    )
-      throw HttpException;
-
     // Save To DB ( + Sign DB )
-    await this._saveToDB(updateContractDto, id, account_key_arr, account_addresse_arr);
+    await this._saveToDB(updateContractDto, id, account_pirvate_arr, account_addresse_arr);
 
     // Return Result
     return await this.findOne(id);
@@ -149,12 +123,12 @@ export class ContractService {
 
   async createSign(id: number, user_addr: string) {
     // Get Account Address
-    const account_pub_key: string = 
-      (await this.contractSignEntity.findOne({ id: id, user_addr: null })).account_pub_key;
-    console.log(account_pub_key);
+    const account_addr: string = 
+      (await this.contractSignEntity.findOne({ id: id, user_addr: null })).account_addr;
+    console.log(account_addr);
     // Sign DB
     this.contractSignEntity.update(
-      { id: id, account_pub_key: account_pub_key },
+      { id: id, account_addr: account_addr },
       { sign_dttm: new Date().toISOString(), user_addr: user_addr },
     );
     // Return Result
@@ -169,11 +143,11 @@ export class ContractService {
     // Api Call (Fee Delegation)
     console.log(meta_data);
     console.log(token_id);
-    const tx_rslt = await ContractApi.postTx(token_id, db_data.account_addr, meta_data);
-    if (tx_rslt === null)
-      throw HttpException;
-    console.log('[Contract Service] ===> After Post Tx');
-    console.log(tx_rslt.transactionId);
+    // const tx_rslt = await ContractApi.postTx(token_id, db_data.account_addr, meta_data);
+    // if (tx_rslt === null)
+    //   throw HttpException;
+    // console.log('[Contract Service] ===> After Post Tx');
+    // console.log(tx_rslt.transactionId);
     
     // let transactionHash = '';
     // for (let idx = 0; idx < db_data.head_count; idx++) {

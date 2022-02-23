@@ -26,7 +26,7 @@ export class Contract extends BaseEntity {
   @Column({
     type: 'varchar',
   })
-  account_pub_key: string;
+  account_priv_key: string;
 
   @Column({
     type: 'varchar',

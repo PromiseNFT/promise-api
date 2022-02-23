@@ -9,7 +9,12 @@ export class ContractSign extends BaseEntity {
   @Column({
     type: 'varchar',
   })
-  account_pub_key: string;
+  account_addr: string;
+
+  @Column({
+    type: 'varchar',
+  })
+  account_priv_key: string;
 
   @Column({
     type: 'datetime',
