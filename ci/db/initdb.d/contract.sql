@@ -3,7 +3,7 @@ CREATE TABLE `contract` (
   `user_addr` VARCHAR(256) NOT NULL,
   `crt_dttm` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `account_addr` VARCHAR(256) NOT NULL,
-  `account_pub_key` VARCHAR(256) NOT NULL,
+  `account_priv_key` VARCHAR(256) NOT NULL,
   `title` VARCHAR(1024) NOT NULL,
   `ctnt` VARCHAR(2048) NOT NULL,
   `date` DATE NOT NULL,
