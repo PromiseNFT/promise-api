@@ -36,5 +36,6 @@ export const axiosAPiHeaders = {
   'x-chain-id': '1001'
 };
 
-export const feePayerAddress = '0x1F22B0f2dc00bB3aefeb835594B0FAa51DF4Bc9A';
+export const feePayerAddress = '0xfc544ec68cdfb66bbff16ecca19e551f7b10c2c1';
+export const feePayerPrivateKey = '0x01ca17f67d1574865a653e34d7cd786f6fd3db0e062203e2a3c845705586be87';
 export const nftContractAddress = '0x6e22a7676e85f2250ce2c7e8f78111a72a61d95f';
