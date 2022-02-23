@@ -116,7 +116,7 @@ export class ContractApi {
 
     const senderTransaction = this.caver.transaction.feeDelegatedSmartContractExecution.create({
         from: address,
-        to: '0xb2E78b1Ca2D43F2F4C934A714C0d9E32069eccc5',
+        to: nftContractAddress ,
         feePayer: feePayerKeyring.address,
         input: input,
         gas: 1000000,        
@@ -144,6 +144,8 @@ export class ContractApi {
     console.log(receipt)
 
     // Remove From Wallet
-    await this.caver.wallet.remove(address);             
+    await this.caver.wallet.remove(address);    
+
+    return receipt;         
   }
 }

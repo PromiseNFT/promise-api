@@ -38,4 +38,5 @@ export const axiosAPiHeaders = {
 
 export const feePayerAddress = '0xfc544ec68cdfb66bbff16ecca19e551f7b10c2c1';
 export const feePayerPrivateKey = '0x01ca17f67d1574865a653e34d7cd786f6fd3db0e062203e2a3c845705586be87';
-export const nftContractAddress = '0x6e22a7676e85f2250ce2c7e8f78111a72a61d95f';
+// export const nftContractAddress = '0x6e22a7676e85f2250ce2c7e8f78111a72a61d95f';
+export const nftContractAddress = '0xb2E78b1Ca2D43F2F4C934A714C0d9E32069eccc5';

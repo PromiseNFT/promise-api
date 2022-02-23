@@ -118,6 +118,12 @@ export class ContractService {
   }
 
   async createSign(id: number, user_addr: string) {
+    // Check Sign Duplication
+    const result = await this.contractSignEntity.findOne({ id: id, user_addr: user_addr });
+    console.log(JSON.stringify(result))
+    if (result != null)
+      throw HttpException;
+
     // Get Account Address
     const account_priv_key: string = 
       (await this.contractSignEntity.findOne({ id: id, user_addr: null })).account_priv_key;
@@ -168,31 +174,10 @@ export class ContractService {
     // Api Call (Fee Delegation)
     console.log(meta_data);
     console.log(token_id);
-    await ContractApi.postTx(token_id, meta_data, db_data.account_addr, db_data.account_priv_key, db_data.user_addr, multisigKeys);
-
-    // const tx_rslt = await ContractApi.postTx(token_id, db_data.account_addr, meta_data);
-    // if (tx_rslt === null)
-    //   throw HttpException;
-    // console.log('[Contract Service] ===> After Post Tx');
-    // console.log(tx_rslt.transactionId);
-    
-    // let transactionHash = '';
-    // for (let idx = 0; idx < db_data.head_count; idx++) {
-    //   // Api Sign
-    //   console.log(db_data.signs[idx].account_addr);
-    //   // TODO
-    //   // Sign With Public Key ?
-    //   //const signRslt = await ContractApi.signTxId(db_data.signs[idx].account_addr, tx_rslt.transactionId);
-    //   if (signRslt === null)
-    //     throw HttpException;      
-    //   if (idx + 1 == db_data.head_count)
-    //     transactionHash = signRslt.transactionHash;
-    // }
-    // console.log('[Contract Service] ===> After Sign');
-    // console.log(meta_data.length);
-    // // Save To DB
-    // await this.contractTxEntity.insert( {id: id, tx_dttm: new Date().toISOString(), tx_hash: transactionHash, tx_id: tx_rslt.transactionId, token_id: token_id, meta_data: meta_data} );
-
-    // return await this.contractTxEntity.findOne( { id: id });
+    const result = await ContractApi.postTx(token_id, meta_data, db_data.account_addr, db_data.account_priv_key, db_data.user_addr, multisigKeys);
+    const transactionHash = result.transactionHash;
+     // Save To DB
+    await this.contractTxEntity.insert( {id: id, tx_dttm: new Date().toISOString(), tx_hash: transactionHash, tx_id: 'NOT_USED', token_id: token_id, meta_data: meta_data} );
+    return await this.contractTxEntity.findOne( { id: id });
   }
 }
