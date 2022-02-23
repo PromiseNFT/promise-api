@@ -1,20 +1,20 @@
-import { BaseEntity, Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity, Entity, Column, PrimaryGeneratedColumn, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Contract } from './contract.entity';
 
 @Entity()
 export class ContractSign extends BaseEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
+
+  @PrimaryColumn({
+    type: 'varchar',
+  })
+  account_priv_key: string;
   
   @Column({
     type: 'varchar',
   })
   account_addr: string;
-
-  @Column({
-    type: 'varchar',
-  })
-  account_priv_key: string;
 
   @Column({
     type: 'datetime',

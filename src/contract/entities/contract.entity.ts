@@ -21,12 +21,12 @@ export class Contract extends BaseEntity {
   @Column({
     type: 'varchar',
   })
-  account_addr: string;
+  account_priv_key: string;
 
   @Column({
     type: 'varchar',
   })
-  account_priv_key: string;
+  account_addr: string;
 
   @Column({
     type: 'varchar',

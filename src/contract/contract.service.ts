@@ -25,11 +25,7 @@ export class ContractService {
 
   async _createMultisigAccount(head_count: number) {
     // Make Multiple Accounts
-    let account_key_arr: Array<string> = [];
-    let account_addresse_arr: Array<string> = [];
-    const account = await ContractApi.creteKeyings(head_count);
-
-    return [account_key_arr, account_addresse_arr];
+    return await ContractApi.creteKeyings(head_count);
   }
 
   // TODO Transaction Need
@@ -123,12 +119,12 @@ export class ContractService {
 
   async createSign(id: number, user_addr: string) {
     // Get Account Address
-    const account_addr: string = 
-      (await this.contractSignEntity.findOne({ id: id, user_addr: null })).account_addr;
-    console.log(account_addr);
+    const account_priv_key: string = 
+      (await this.contractSignEntity.findOne({ id: id, user_addr: null })).account_priv_key;
+    console.log(account_priv_key);
     // Sign DB
     this.contractSignEntity.update(
-      { id: id, account_addr: account_addr },
+      { id: id, account_priv_key: account_priv_key },
       { sign_dttm: new Date().toISOString(), user_addr: user_addr },
     );
     // Return Result
