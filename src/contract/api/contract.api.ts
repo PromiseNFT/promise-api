@@ -72,15 +72,30 @@ export class ContractApi {
     return [account_pirvate_arr, account_addresse_arr];
   }
 
-  static async postTx(token_id: string, meta_data: string, address: string, privateKey: string, user_addr: string) {
+  static async postTx(token_id: string, meta_data: string, address: string, privateKey: string, user_addr: string, multisigKeys: string[]) {
     // Add To Wallet
-    const senderKeyring = await this.caver.wallet.keyring.create(address, privateKey);
-    const feePayerKeyring = await this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey);
-    await this.caver.wallet.remove(address);    
-    await this.caver.wallet.remove(feePayerAddress);   
-    await this.caver.wallet.add(senderKeyring);
-    await this.caver.wallet.add(feePayerKeyring);
 
+    console.log("token_id : " + token_id);
+    console.log("meta_data : " + meta_data);
+    console.log("address : " + address);
+    console.log("privateKey : " + privateKey);
+    console.log("user_addr : " + user_addr);
+    
+    /*
+    token_id : 0x9ae75d441e8a460686f91bcb2f838293
+    meta_data : {"id":"1","crt_dttm":"2022-02-23T15:38:15.000Z","user_addr":"0x2058a750ea824841e991ef386c3aD63D088303B5","title":"Title Example String","ctnt":"Content Example String","date":"2022-02-23","time":"","location":"Location Example String","head_count":5,"signs":[{"sign_dttm":"2022-02-23T16:03:20.000Z","user_addr":"1"},{"sign_dttm":"2022-02-23T16:03:32.000Z","user_addr":"2"},{"sign_dttm":"2022-02-23T16:03:37.000Z","user_addr":"3"},{"sign_dttm":"2022-02-23T16:03:41.000Z","user_addr":"4"},{"sign_dttm":"2022-02-23T16:03:44.000Z","user_addr":"5"}]}
+    address : 0xf77dbd2479177f318365e25ae33767ca86b9bb6a
+    privateKey : 0xc26499c48888f2e55ee7d147592d851a6a0173ededbc269943d01ec02d173bc7
+    user_addr : 0x2058a750ea824841e991ef386c3aD63D088303B5
+    */
+  
+    const senderKeyring = await this.caver.wallet.keyring.create(address, privateKey);
+    //const feePayerKeyring = await this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey);
+    const feePayerKeyring = await this.caver.wallet.newKeyring(feePayerAddress, feePayerPrivateKey);
+
+    await this.caver.wallet.remove(address);
+    await this.caver.wallet.add(senderKeyring);    
+    
     // (1) Create Transaction (User Transaction) 
     const input = this.caver.klay.abi.encodeFunctionCall({
         name: 'mintWithTokenURI',
@@ -96,15 +111,29 @@ export class ContractApi {
             name: 'tokenURI'
         }]
     }, [user_addr, token_id, meta_data]);
+    
     console.log(input);
+
     const senderTransaction = this.caver.transaction.feeDelegatedSmartContractExecution.create({
         from: address,
-        to: nftContractAddress,
+        to: '0xb2E78b1Ca2D43F2F4C934A714C0d9E32069eccc5',
+        feePayer: feePayerKeyring.address,
         input: input,
-        gas: 90000,
+        gas: 1000000,        
     });
+
+    console.log("Check 1111");
+
+    // todo refactoring
+    // Get Multisig Key    
+    const multipleKeyring = this.caver.wallet.keyring.create(senderKeyring.address, multisigKeys);
+    console.log("Check 2222");
+    this.caver.wallet.updateKeyring(multipleKeyring);
+    console.log("Check 3333");
+    // end
+
     // (2) Create rawTransaction 
-    await this.caver.wallet.signAsFeePayer(feePayerAddress, senderTransaction);
+    await this.caver.wallet.signAsFeePayer(feePayerKeyring.address, senderTransaction);
     console.log(`[postTx] ===> signAsFeePayer : feeDelegatedSmartContractExecution`);
 
     await this.caver.wallet.sign(address, senderTransaction);
@@ -115,7 +144,6 @@ export class ContractApi {
     console.log(receipt)
 
     // Remove From Wallet
-    await this.caver.wallet.remove(address);    
-    await this.caver.wallet.remove(feePayerAddress);   
+    await this.caver.wallet.remove(address);             
   }
 }
