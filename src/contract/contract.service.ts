@@ -32,31 +32,32 @@ export class ContractService {
   async _saveToDB(
     dto: UpdateContractDto,
     id: number,
-    account_pirvate_arr: Array<string>,
-    account_addresse_arr: Array<string>
+    accountAddress: string,
+    accountPrivateKey: string,
+    accountMultisigKeys: Array<string>
   ) {
     console.log('[Contract Service] ===> _saveToDB()');
     console.log(dto);
     console.log(id);
-    console.log(account_pirvate_arr);
-    console.log(account_addresse_arr);
+    console.log(accountAddress);
+    console.log(accountPrivateKey);
+    console.log(accountMultisigKeys);
 
     if (id !== null || id > 0) 
       await this.contractSignEntity.delete({ id: id });
 
     if (id === null || id < 0) {
       // dto.crt_dttm = Date.now();
-      id = 
-        (await this.contractEntity.insert( { user_addr: dto.user_addr, account_addr: account_addresse_arr[0], account_priv_key: account_pirvate_arr[0], title: dto.title, ctnt: dto.ctnt, date: dto.date, time: dto.time, location: dto.location, head_count: dto.head_count } )).generatedMaps[0].id;
+      id = (await this.contractEntity.insert( { user_addr: dto.user_addr, account_addr: accountAddress, account_priv_key: accountPrivateKey, title: dto.title, ctnt: dto.ctnt, date: dto.date, time: dto.time, location: dto.location, head_count: dto.head_count } )).generatedMaps[0].id;
     } else {
-      await this.contractEntity.update({ id: id }, { account_addr: account_addresse_arr[0], account_priv_key: account_pirvate_arr[0], title: dto.title, ctnt: dto.ctnt, date: dto.date, time: dto.time, location: dto.location, head_count: dto.head_count });
+      await this.contractEntity.update({ id: id }, { account_addr: accountAddress, account_priv_key: accountPrivateKey, title: dto.title, ctnt: dto.ctnt, date: dto.date, time: dto.time, location: dto.location, head_count: dto.head_count });
     }
 
-    for (let idx = 1; idx < dto.head_count + 1; idx++) {
+    for (let idx = 0; idx < dto.head_count; idx++) {
       await this.contractSignEntity.insert({
         id: id,
-        account_addr: account_addresse_arr[idx],
-        account_priv_key: account_pirvate_arr[idx]
+        account_addr: accountAddress,
+        account_priv_key: accountMultisigKeys[idx]
       });
     }
 
@@ -65,18 +66,21 @@ export class ContractService {
 
   async create(createContractDto: CreateContractDto) {
     console.log('[Contract Service] ===> Before Create Account');
-    const [account_pirvate_arr, account_addresse_arr] = await this._createMultisigAccount(
+    const [accountAddress, accountPrivateKey, accountMultisigKeys] = await this._createMultisigAccount(
       createContractDto.head_count,
     );
     console.log('[Contract Service] ===> After Create Account');
-    console.log(account_pirvate_arr);
-    console.log(account_addresse_arr);
+    console.log(accountAddress);
+    console.log(accountPrivateKey);
+    console.log(accountMultisigKeys);
+
+    console.log(typeof(accountAddress));
+    console.log(typeof(accountPrivateKey));
+    console.log(typeof(accountMultisigKeys));
 
     // Save To DB ( + Sign DB )
     console.log('[Contract Service] ===> Before _saveToDB()');
-    console.log(account_pirvate_arr);
-    console.log(account_addresse_arr);
-    const id: number = await this._saveToDB(createContractDto, -1, account_pirvate_arr, account_addresse_arr);
+    const id: number = await this._saveToDB(createContractDto, -1, accountAddress as string, accountPrivateKey as string, accountMultisigKeys as Array<string>);    
 
     // Return Result
     return await this.findOne(id);
@@ -101,12 +105,12 @@ export class ContractService {
   }
 
   async update(id: number, updateContractDto: UpdateContractDto) {
-    const [account_pirvate_arr, account_addresse_arr] = await this._createMultisigAccount(
+    const [accountAddress, accountPrivateKey, accountMultisigKeys] = await this._createMultisigAccount(
       updateContractDto.head_count,
     );
 
     // Save To DB ( + Sign DB )
-    await this._saveToDB(updateContractDto, id, account_pirvate_arr, account_addresse_arr);
+    await this._saveToDB(updateContractDto, id, accountAddress as string, accountPrivateKey as string,  accountMultisigKeys as Array<string>);    
 
     // Return Result
     return await this.findOne(id);

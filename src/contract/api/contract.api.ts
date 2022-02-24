@@ -11,63 +11,55 @@ export class ContractApi {
   );
 
   static async createMultisigKeyring(size: number) {
-    const createKeyring = await this.caver.wallet.keyring.generate();
-    const senderKeyring = await this.caver.wallet.keyring.create(createKeyring.address, createKeyring.key.privateKey);
-    await this.caver.wallet.add(senderKeyring);
+    const createKeyring = this.caver.wallet.keyring.generate();
+    const senderKeyring = this.caver.wallet.keyring.create(createKeyring.address, createKeyring.key.privateKey);
+    this.caver.wallet.add(senderKeyring);
     // Add Fee Payer Account To Wallet
-    const feePayerKeyring = await this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey);
-    await this.caver.wallet.remove(feePayerAddress);
-    await this.caver.wallet.add(feePayerKeyring);
+    const feePayerKeyring = this.caver.wallet.newKeyring(feePayerAddress, feePayerPrivateKey);       
     
-    console.log(JSON.stringify(senderKeyring));
-
-    const keyring = await this.caver.wallet.keyring.generateMultipleKeys(size);
-    const newKeyring = await this.caver.wallet.keyring.create(senderKeyring.address, keyring);
-    const account = await newKeyring.toAccount({ threshold: size, weights: Array.from({length: size}, () => 1) });
+    const keyring = this.caver.wallet.keyring.generateMultipleKeys(size);
+    const newKeyring = this.caver.wallet.keyring.create(senderKeyring.address, keyring);
+    const account = newKeyring.toAccount({ threshold: size, weights: Array.from({ length: size }, () => 1) });
 
     const feeDelegatedAccountUpdate = this.caver.transaction.feeDelegatedAccountUpdate.create({
         from: senderKeyring.address,
         account: account,
         gas: GAS_LIMIT,
-        feePayer: feePayerAddress
+        feePayer: feePayerKeyring.address
     });
 
     await this.caver.wallet.signAsFeePayer(feePayerAddress, feeDelegatedAccountUpdate);
-    await this.caver.wallet.sign(senderKeyring.address, feeDelegatedAccountUpdate);        
+    await this.caver.wallet.sign(senderKeyring.address, feeDelegatedAccountUpdate);    
 
     // todo Write transaction id in the database
-    const receipt  = await this.caver.rpc.klay.sendRawTransaction(feeDelegatedAccountUpdate);    
+    const receipt = await this.caver.rpc.klay.sendRawTransaction(feeDelegatedAccountUpdate);    
     console.log(receipt.transactionHash);
     
-    // Check the status of the multisig wallet.
+    // todo Check the status of the multisig wallet.
     const accountKey = await this.caver.rpc.klay.getAccountKey(senderKeyring.address);    
     if (accountKey.keyType == 4) {
       console.log('Multisig wallet');
     }
-    
-    // Update keyring with new private key in in-memory wallet
-    await this.caver.wallet.updateKeyring(newKeyring);
-    console.log(`account =>`);
-    console.log(JSON.stringify(account));
-    console.log(`newKeyring =>`);
-    console.log(JSON.stringify(newKeyring));
 
-    let account_pirvate_arr: Array<string> = [];
-    let account_addresse_arr: Array<string> = [];
+    let accountAddress = senderKeyring.address;      
+    let accountPrivateKey = createKeyring.key.privateKey;  
+    let accountMultisigKeys: Array<string> = [];
 
-    account_addresse_arr.push(account.address);
     for (let idx = 0; idx < size; idx++)
-      account_addresse_arr.push(newKeyring.address);
-    account_pirvate_arr.push(createKeyring.key.privateKey);
-    for (let idx = 0; idx < size; idx++)
-      account_pirvate_arr.push(newKeyring.keys[idx].privateKey);
+      accountMultisigKeys.push(newKeyring.keys[idx].privateKey);
 
-    // Remove From In Memory
-    await this.caver.wallet.remove(feePayerAddress);
-    for (let idx = 0; idx < size + 1; idx++)
-      await this.caver.wallet.remove(account_addresse_arr[idx]);
+    console.log(accountAddress);
+    console.log(accountPrivateKey);
+    console.log(accountMultisigKeys);
 
-    return [account_pirvate_arr, account_addresse_arr];
+    console.log(typeof(accountAddress));
+    console.log(typeof(accountPrivateKey));
+    console.log(typeof(accountMultisigKeys));
+
+    // Remove From In Memory Wallet
+    this.caver.wallet.remove(senderKeyring.address);    
+
+    return [accountAddress, accountPrivateKey, accountMultisigKeys];
   }
 
   static async postTx(token_id: string, meta_data: string, address: string, privateKey: string, user_addr: string, multisigKeys: string[]) {
@@ -87,12 +79,12 @@ export class ContractApi {
     user_addr : 0x2058a750ea824841e991ef386c3aD63D088303B5
     */
   
-    const senderKeyring = await this.caver.wallet.keyring.create(address, privateKey);
+    const senderKeyring = this.caver.wallet.keyring.create(address, privateKey);
     //const feePayerKeyring = await this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey);
-    const feePayerKeyring = await this.caver.wallet.newKeyring(feePayerAddress, feePayerPrivateKey);
+    const feePayerKeyring = this.caver.wallet.newKeyring(feePayerAddress, feePayerPrivateKey);
 
-    await this.caver.wallet.remove(address);
-    await this.caver.wallet.add(senderKeyring);    
+    this.caver.wallet.remove(address);
+    this.caver.wallet.add(senderKeyring);    
     
     // (1) Create Transaction (User Transaction) 
     const input = this.caver.klay.abi.encodeFunctionCall({
@@ -142,7 +134,7 @@ export class ContractApi {
     console.log(receipt)
 
     // Remove From Wallet
-    await this.caver.wallet.remove(address);    
+    this.caver.wallet.remove(address);    
 
     return receipt;         
   }
