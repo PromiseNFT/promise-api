@@ -35,6 +35,16 @@ export class ContractApi {
     await this.caver.wallet.signAsFeePayer(feePayerAddress, feeDelegatedAccountUpdate);
     await this.caver.wallet.sign(senderKeyring.address, feeDelegatedAccountUpdate);        
 
+    // todo Write transaction id in the database
+    const receipt  = await this.caver.rpc.klay.sendRawTransaction(feeDelegatedAccountUpdate);    
+    console.log(receipt.transactionHash);
+    
+    // Check the status of the multisig wallet.
+    const accountKey = await this.caver.rpc.klay.getAccountKey(senderKeyring.address);    
+    if (accountKey.keyType == 4) {
+      console.log('Multisig wallet');
+    }
+    
     // Update keyring with new private key in in-memory wallet
     await this.caver.wallet.updateKeyring(newKeyring);
     console.log(`account =>`);
