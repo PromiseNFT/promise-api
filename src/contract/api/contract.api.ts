@@ -10,12 +10,12 @@ export class ContractApi {
     ),
   );
 
-  static async createMultisigKeyring(size: number) {
+  static async createMultisigKeyring(size: number) : Promise<[string, string, string[]]> {
     const createKeyring = this.caver.wallet.keyring.generate();
-    const senderKeyring = this.caver.wallet.keyring.create(createKeyring.address, createKeyring.key.privateKey);
-    this.caver.wallet.add(senderKeyring);
-    // Add Fee Payer Account To Wallet
+    const senderKeyring = this.caver.wallet.keyring.create(createKeyring.address, createKeyring.key.privateKey);    
     const feePayerKeyring = this.caver.wallet.newKeyring(feePayerAddress, feePayerPrivateKey);       
+
+    this.caver.wallet.add(senderKeyring);    
     
     const keyring = this.caver.wallet.keyring.generateMultipleKeys(size);
     const newKeyring = this.caver.wallet.keyring.create(senderKeyring.address, keyring);
@@ -40,21 +40,13 @@ export class ContractApi {
     if (accountKey.keyType == 4) {
       console.log('Multisig wallet');
     }
-
-    let accountAddress = senderKeyring.address;      
+    
+    let accountAddress = senderKeyring.address;    
     let accountPrivateKey = createKeyring.key.privateKey;  
     let accountMultisigKeys: Array<string> = [];
 
     for (let idx = 0; idx < size; idx++)
       accountMultisigKeys.push(newKeyring.keys[idx].privateKey);
-
-    console.log(accountAddress);
-    console.log(accountPrivateKey);
-    console.log(accountMultisigKeys);
-
-    console.log(typeof(accountAddress));
-    console.log(typeof(accountPrivateKey));
-    console.log(typeof(accountMultisigKeys));
 
     // Remove From In Memory Wallet
     this.caver.wallet.remove(senderKeyring.address);    
