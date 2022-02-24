@@ -74,13 +74,9 @@ export class ContractService {
     console.log(accountPrivateKey);
     console.log(accountMultisigKeys);
 
-    console.log(typeof(accountAddress));
-    console.log(typeof(accountPrivateKey));
-    console.log(typeof(accountMultisigKeys));
-
     // Save To DB ( + Sign DB )
     console.log('[Contract Service] ===> Before _saveToDB()');
-    const id: number = await this._saveToDB(createContractDto, -1, accountAddress as string, accountPrivateKey as string, accountMultisigKeys as Array<string>);    
+    const id: number = await this._saveToDB(createContractDto, -1, accountAddress, accountPrivateKey, accountMultisigKeys);    
 
     // Return Result
     return await this.findOne(id);
@@ -110,7 +106,7 @@ export class ContractService {
     );
 
     // Save To DB ( + Sign DB )
-    await this._saveToDB(updateContractDto, id, accountAddress as string, accountPrivateKey as string,  accountMultisigKeys as Array<string>);    
+    await this._saveToDB(updateContractDto, id, accountAddress, accountPrivateKey,  accountMultisigKeys);    
 
     // Return Result
     return await this.findOne(id);
