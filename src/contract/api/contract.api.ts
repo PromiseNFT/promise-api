@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Caver from 'caver-js';
-import { caverAPIConn, axiosAPiHeaders, feePayerAddress, feePayerPrivateKey, nftContractAddress } from 'src/connections/default';
+import { caverAPIConn, axiosAPiHeaders, feePayerAddress, feePayerPrivateKey, nftContractAddress, GAS_LIMIT } from 'src/connections/default';
 
 export class ContractApi {
   static caver = new Caver(
@@ -29,7 +29,7 @@ export class ContractApi {
     const feeDelegatedAccountUpdate = this.caver.transaction.feeDelegatedAccountUpdate.create({
         from: senderKeyring.address,
         account: account,
-        gas: 10000000,
+        gas: GAS_LIMIT,
         feePayer: feePayerAddress
     });
     console.log(`[creteKeyings] ===> feeDelegatedAccountUpdate Created`);
@@ -119,7 +119,7 @@ export class ContractApi {
         to: nftContractAddress ,
         feePayer: feePayerKeyring.address,
         input: input,
-        gas: 1000000,        
+        gas: GAS_LIMIT,        
     });
 
     console.log("Check 1111");
