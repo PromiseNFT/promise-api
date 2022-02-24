@@ -10,7 +10,7 @@ export class ContractApi {
     ),
   );
 
-  static async creteKeyings(size: number) {
+  static async createMultisigKeyring(size: number) {
     const createKeyring = await this.caver.wallet.keyring.generate();
     console.log(JSON.stringify(createKeyring.address));
     console.log(JSON.stringify(createKeyring.key.privateKey));

@@ -25,7 +25,7 @@ export class ContractService {
 
   async _createMultisigAccount(head_count: number) {
     // Make Multiple Accounts
-    return await ContractApi.creteKeyings(head_count);
+    return await ContractApi.createMultisigKeyring(head_count);
   }
 
   // TODO Transaction Need
