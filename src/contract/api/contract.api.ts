@@ -12,8 +12,6 @@ export class ContractApi {
 
   static async createMultisigKeyring(size: number) {
     const createKeyring = await this.caver.wallet.keyring.generate();
-    console.log(JSON.stringify(createKeyring.address));
-    console.log(JSON.stringify(createKeyring.key.privateKey));
     const senderKeyring = await this.caver.wallet.keyring.create(createKeyring.address, createKeyring.key.privateKey);
     await this.caver.wallet.add(senderKeyring);
     // Add Fee Payer Account To Wallet
@@ -22,6 +20,7 @@ export class ContractApi {
     await this.caver.wallet.add(feePayerKeyring);
     
     console.log(JSON.stringify(senderKeyring));
+
     const keyring = await this.caver.wallet.keyring.generateMultipleKeys(size);
     const newKeyring = await this.caver.wallet.keyring.create(senderKeyring.address, keyring);
     const account = await newKeyring.toAccount({ threshold: size, weights: Array.from({length: size}, () => 1) });
@@ -32,20 +31,9 @@ export class ContractApi {
         gas: GAS_LIMIT,
         feePayer: feePayerAddress
     });
-    console.log(`[creteKeyings] ===> feeDelegatedAccountUpdate Created`);
-    
+
     await this.caver.wallet.signAsFeePayer(feePayerAddress, feeDelegatedAccountUpdate);
-    console.log(`[creteKeyings] ===> signAsFeePayer : feeDelegatedAccountUpdate`);
-
-    await this.caver.wallet.sign(senderKeyring.address, feeDelegatedAccountUpdate);
-    console.log(`[creteKeyings] ===> sign : feeDelegatedAccountUpdate`);
-
-    const receipt = await this.caver.rpc.klay.sendRawTransaction(feeDelegatedAccountUpdate);
-    const accountKey = await this.caver.rpc.klay.getAccountKey(senderKeyring.address);
-    console.log(`Result of account key update to AccountKeyWeightedMultiSig`);
-    console.log(`Account address: ${senderKeyring.address}`);
-    console.log(`accountKey =>`);
-    console.log(accountKey);
+    await this.caver.wallet.sign(senderKeyring.address, feeDelegatedAccountUpdate);        
 
     // Update keyring with new private key in in-memory wallet
     await this.caver.wallet.updateKeyring(newKeyring);
