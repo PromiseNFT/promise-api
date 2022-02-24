@@ -1,3 +1,30 @@
+## Description
+
+This Reposiory is about PromiseNFT Blockchain/NFT Backend Application Using Klaytn Blockchain Network.  
+  - Use KIP(Klaytn Compatible Token)-17 for NFT minting
+  - *Reference : [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.*
+
+
+## List of APIs provided  
+
+  - **GET /contract** : API to retrieve contract list  
+  - **GET /contract/{id}** : API to inquire contract details   
+  - **POST /contract** : API to create contract  
+  - **PUT /contract/{id}** : API to modify contract  
+  - **DELETE /contract/{id}** : API to delete contract  
+  - **POST /contract/{id}/sign** : API to sign contracts  
+  - **POST /contract/{id}/tx** : API to issue contracts to NFT (KIP-17)  
+
+## Prerequisites
+
+The following packages should be installed before using this source code.
+  - Git
+  - Docker
+  - Node > v.14.14.0
+  - Yarn
+
+## About NestJS
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
@@ -22,52 +49,67 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## DB Configuration (Using Docker)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+```bash
+$ cd ./ci/db
+$ docker-compose-up
+```
+  - **DDL File Location :** ./ci/db/initdb.d/
+  - **DB Configuration File Location :**
+    - ./ci/db/.env
+    - ./src/connections/default.ts
 
 ## Installation
 
 ```bash
-$ npm install
+$ yarn intall or yarn
+$ yarn build
 ```
+  - **Klaytn(Blockchain) Configuration File Location :** ./src/connections/default.ts
 
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+$ yarn start
 
 # watch mode
-$ npm run start:dev
+$ yarn start:dev
 
 # production mode
-$ npm run start:prod
+$ yarn start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+$ yarn test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn test:cov
 ```
 
-## Support
+## Contributors 
+
+  - PM 신건식 - [Github](https://github.com/GeonSik-Shin)
+  - BackEnd 배성진 - [Github](https://github.com/SharkBSJ)
+  - FrontEnd 우성현 - [Github](https://github.com/yusunghyun)
+
+## License
+
+PromiseNFT API is [MIT licensed](LICENSE).
+
+## Support (NestJS)
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
+## Stay in touch (NestJS)
 
 - Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
 - Website - [https://nestjs.com](https://nestjs.com/)
 - Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
