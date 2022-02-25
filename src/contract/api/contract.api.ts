@@ -12,9 +12,17 @@ export class ContractApi {
 
   static async createMultisigKeyring(size: number) : Promise<[string, string, string[]]> {
     const createKeyring = this.caver.wallet.keyring.generate();
-    const senderKeyring = this.caver.wallet.keyring.create(createKeyring.address, createKeyring.key.privateKey);    
-    const feePayerKeyring = this.caver.wallet.newKeyring(feePayerAddress, feePayerPrivateKey);       
-
+    const senderKeyring = this.caver.wallet.keyring.create(createKeyring.address, createKeyring.key.privateKey);   
+    let feePayerKeyring;
+    try {
+      feePayerKeyring = this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey);   
+      this.caver.wallet.add(feePayerKeyring);  
+    } catch (e) {
+      this.caver.wallet.remove(feePayerAddress); 
+      feePayerKeyring = this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey);   
+      this.caver.wallet.add(feePayerKeyring);  
+    } 
+    
     this.caver.wallet.add(senderKeyring);    
     
     const keyring = this.caver.wallet.keyring.generateMultipleKeys(size);
@@ -73,7 +81,15 @@ export class ContractApi {
   
     const senderKeyring = this.caver.wallet.keyring.create(address, privateKey);
     //const feePayerKeyring = await this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey);
-    const feePayerKeyring = this.caver.wallet.newKeyring(feePayerAddress, feePayerPrivateKey);
+    let feePayerKeyring;
+    try {
+      feePayerKeyring = this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey);   
+      this.caver.wallet.add(feePayerKeyring);  
+    } catch (e) {
+      this.caver.wallet.remove(feePayerAddress); 
+      feePayerKeyring = this.caver.wallet.keyring.create(feePayerAddress, feePayerPrivateKey); 
+      this.caver.wallet.add(feePayerKeyring);    
+    }
 
     this.caver.wallet.remove(address);
     this.caver.wallet.add(senderKeyring);    
@@ -104,14 +120,14 @@ export class ContractApi {
         gas: GAS_LIMIT,        
     });
 
-    console.log("Check 1111");
+    console.log("[ContractApi - postTx] ===> Check 1111");
 
     // todo refactoring
     // Get Multisig Key    
     const multipleKeyring = this.caver.wallet.keyring.create(senderKeyring.address, multisigKeys);
-    console.log("Check 2222");
+    console.log("[ContractApi - postTx] ===> Check 2222");
     this.caver.wallet.updateKeyring(multipleKeyring);
-    console.log("Check 3333");
+    console.log("[ContractApi - postTx] ===> Check 3333");
     // end
 
     // (2) Create rawTransaction 
