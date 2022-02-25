@@ -84,12 +84,18 @@ export class ContractService {
 
   async findAll(user_addr: string) {
     // TODO Extract Contract That User Signed
-    return await this.contractEntity.find({ 
-      relations: ['signs'],
-      where: [
-        { user_addr: user_addr }, 
-      ]
-    });
+    // return await this.contractEntity.find({ 
+    //   relations: ['signs'],
+    //   where: [
+    //     { user_addr: user_addr }, 
+    //     { signs: { user_addr: user_addr } }
+    //   ]
+    // });
+    return await this.contractEntity.createQueryBuilder('contract')
+      .innerJoin('contract.signs', 's')
+      .where('s.user_addr = :user_addr', { user_addr })
+      .orWhere('contract.user_addr = :user_addr', { user_addr })
+      .getMany();
     // return await this.contractEntity.find( {user_addr: user_addr} );
   }
 
