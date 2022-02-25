@@ -1,6 +1,7 @@
 ## Description
 
 This Reposiory is about PromiseNFT Blockchain/NFT Backend Application Using Klaytn Blockchain Network.  
+  - Deployed Backend Address : https://promisenft.ml (AWS EC2)  
   - Use KIP(Klaytn Compatible Token)-17 for NFT minting
   - *Reference : [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.*
 

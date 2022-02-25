@@ -95,6 +95,7 @@ export class ContractService {
       .innerJoin('contract.signs', 's')
       .where('s.user_addr = :user_addr', { user_addr })
       .orWhere('contract.user_addr = :user_addr', { user_addr })
+      .orderBy('contract.id', 'DESC')
       .getMany();
 
     for (const idx in result)
