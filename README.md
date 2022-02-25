@@ -98,7 +98,7 @@ $ yarn test:cov
 
   - PM 신건식 - [Github](https://github.com/GeonSik-Shin)
   - BackEnd 배성진 - [Github](https://github.com/SharkBSJ)
-  - FrontEnd 우성현 - [Github](https://github.com/yusunghyun)
+  - FrontEnd 유성현 - [Github](https://github.com/yusunghyun)
 
 ## License
 
