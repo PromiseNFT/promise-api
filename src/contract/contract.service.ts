@@ -91,11 +91,16 @@ export class ContractService {
     //     { signs: { user_addr: user_addr } }
     //   ]
     // });
-    return await this.contractEntity.createQueryBuilder('contract')
+    const result = await this.contractEntity.createQueryBuilder('contract')
       .innerJoin('contract.signs', 's')
       .where('s.user_addr = :user_addr', { user_addr })
       .orWhere('contract.user_addr = :user_addr', { user_addr })
       .getMany();
+
+    for (const idx in result)
+      delete result[idx].account_priv_key;
+
+    return result;
     // return await this.contractEntity.find( {user_addr: user_addr} );
   }
 
@@ -103,7 +108,12 @@ export class ContractService {
     // TODO Retrun With Left Join Data
     // return await this.contractEntity.findOne(id, { relations: ['signs', 'tx'] });
     //return await this.contractEntity.findOne( {id: id} );
-    return await this.contractEntity.findOne(id, { relations: ['signs', 'tx'] });
+    const result = await this.contractEntity.findOne(id, { relations: ['signs', 'tx'] });
+    delete result.account_priv_key;
+    for (const idx in result.signs)
+      delete result.signs[idx].account_priv_key;
+    // delete result.signs.account_priv_key;
+    return result;
   }
 
   async update(id: number, updateContractDto: UpdateContractDto) {
@@ -129,7 +139,7 @@ export class ContractService {
     console.log(JSON.stringify(result))
     if (result != null)
       throw HttpException;
-
+    
     // Get Account Address
     const account_priv_key: string = 
       (await this.contractSignEntity.findOne({ id: id, user_addr: null })).account_priv_key;
@@ -140,11 +150,15 @@ export class ContractService {
       { sign_dttm: new Date().toISOString(), user_addr: user_addr },
     );
     // Return Result
-    return await this.contractSignEntity.find({ id: id });
+    const return_signs = await this.contractSignEntity.find({ id: id });
+    for (const idx in return_signs) {
+      delete return_signs[idx].account_priv_key;
+    }
+    return await return_signs;
   }
 
   async createTx(id: number, user_addr: string) {
-    const db_data = await this.findOne(id);
+    const db_data = await this.contractEntity.findOne(id, { relations: ['signs'] });
 
     console.log(db_data);
 
@@ -167,13 +181,15 @@ export class ContractService {
         user_addr: db_data.signs[idx].user_addr
       } );
     }
-
+    console.log('[ContractService - createTx] ===> Before Set Multisig Key');
     let multisigKeys = [];
 
     // Multisig Pub Key List
     for (let idx = 0; idx < db_data.head_count; idx++) {
       multisigKeys.push(db_data.signs[idx].account_priv_key);
     }
+    
+    console.log('[ContractService - createTx] ===> After Set Multisig Key');
 
     const meta_data = JSON.stringify(meta_data_map);
 
