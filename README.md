@@ -5,6 +5,9 @@ This Reposiory is about PromiseNFT Blockchain/NFT Backend Application Using Klay
   - Use KIP(Klaytn Compatible Token)-17 for NFT minting
   - *Reference : [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.*
 
+<p align="center">
+  <img src="./run_screen.png" width="320" alt="Nest Logo" /></a>
+</p>
 
 ## List of APIs provided  
 
